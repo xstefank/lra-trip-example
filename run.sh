@@ -33,16 +33,10 @@ function getDebugArgs {
   [ $DEBUG -eq 1 ] && echo "$JDWP"$1 || echo ""
 }
 
-[ $NARAYANA_VERSION ] || NARAYANA_VERSION=5.7.2.Final
-if [ ! -d narayana-full-$NARAYANA_VERSION ]; then
-    wget -nc http://www.jboss.org/jbosstm/downloads/$NARAYANA_VERSION/binary/narayana-full-$NARAYANA_VERSION-bin.zip
-    unzip narayana-full-$NARAYANA_VERSION-bin.zip
-fi
-
-java $(getDebugArgs $PORT) -jar narayana-full-$NARAYANA_VERSION/rts/lra/lra-coordinator-swarm.jar -Dswarm.http.port=8080 -Dswarm.transactions.object-store-path=../parent &
+java $(getDebugArgs $PORT) -jar lra-coordinator/lra-coordinator-swarm.jar -Dswarm.http.port=8080 -Dswarm.transactions.object-store-path=../parent &
 ID1=$!
 ((PORT++))
-java $(getDebugArgs $PORT) -jar narayana-full-$NARAYANA_VERSION/rts/lra/lra-coordinator-swarm.jar -Dswarm.http.port=8081 -Dswarm.transactions.object-store-path=../subordinate &
+java $(getDebugArgs $PORT) -jar lra-coordinator/lra-coordinator-swarm.jar -Dswarm.http.port=8081 -Dswarm.transactions.object-store-path=../subordinate &
 ID2=$!
 ((PORT++))
 java $(getDebugArgs $PORT) -jar hotel-service/target/lra-test-swarm.jar -Dswarm.http.port=8082 &
@@ -57,7 +51,7 @@ ID5=$!
 
 if [ $SVRONLY -ne 1 ]; then
     echo "Waiting for all the servers to start"
-    sleep 30
+    sleep 120
 
     echo "Running close case"
     BOOKINGID=$(curl -X POST "http://localhost:8084/?hotelName=TheGrand&flightNumber1=BA123&flightNumber2=RH456" -sS | jq -r ".id")
