@@ -21,11 +21,12 @@
  */
 package io.narayana.rts.lra.demo.tripcontroller;
 
-import io.narayana.lra.annotation.LRA;
 import io.narayana.lra.client.LRAClient;
 import io.narayana.lra.client.NarayanaLRAClient;
 import io.narayana.rts.lra.demo.model.Booking;
 import io.narayana.rts.lra.demo.model.BookingStore;
+import org.eclipse.microprofile.lra.annotation.LRA;
+import org.jboss.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,10 +55,14 @@ import java.net.URLEncoder;
 @RequestScoped
 @Path("/")
 public class TripMicroservice {
+
+    private static final Logger log = Logger.getLogger(TripMicroservice.class);
+
     @Inject
     private BookingStore bookingStore;
     private Client hotelClient, flightClient;
     private WebTarget hotelTarget, flightTarget;
+    private String hotelURL, flightURL;
 
     @Inject
     private LRAClient lraClient;
@@ -68,6 +73,7 @@ public class TripMicroservice {
     @Produces(MediaType.APPLICATION_JSON)
     @LRA(delayClose = true, join = false)
     public Booking reserve(@HeaderParam(NarayanaLRAClient.LRA_HTTP_HEADER) String bookingId) throws UnsupportedEncodingException {
+
         Booking theGrand = initiateBooking("hotel-TheGrand");
         Booking firstClass = initiateBooking("flight-firstClass");
         Booking economy = initiateBooking("flight-economy");
@@ -109,8 +115,10 @@ public class TripMicroservice {
     private void initController() throws MalformedURLException {
         hotelClient = ClientBuilder.newClient();
         flightClient = ClientBuilder.newClient();
-        hotelTarget = hotelClient.target(new URL("http://" + System.getProperty("hotel.service.http.host", "localhost") + ":" + Integer.getInteger("hotel.service.http.port", 8082)).toExternalForm());
-        flightTarget = flightClient.target(new URL("http://" + System.getProperty("flight.service.http.host", "localhost") + ":" + Integer.getInteger("flight.service.http.port", 8083)).toExternalForm());
+        hotelURL = "http://" + System.getProperty("hotel.service.http.host", "localhost") + ":" + Integer.getInteger("hotel.service.http.port", 8082);
+        flightURL = "http://" + System.getProperty("flight.service.http.host", "localhost") + ":" + Integer.getInteger("flight.service.http.port", 8083);
+        hotelTarget = hotelClient.target(new URL(hotelURL).toExternalForm());
+        flightTarget = flightClient.target(new URL(flightURL).toExternalForm());
     }
 
     @PreDestroy

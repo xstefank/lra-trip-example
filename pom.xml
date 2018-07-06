@@ -44,6 +44,6 @@
         <module>trip-controller</module>
     </modules>
     <properties>
-        <version.io.narayana>5.7.2.Final</version.io.narayana>
+        <version.io.narayana>5.9.1.Final-SNAPSHOT</version.io.narayana>
     </properties>
 </project>

@@ -21,14 +21,14 @@
  */
 package io.narayana.rts.lra.demo.flight;
 
-import io.narayana.lra.annotation.Compensate;
-import io.narayana.lra.annotation.Complete;
-import io.narayana.lra.annotation.LRA;
-import io.narayana.lra.annotation.NestedLRA;
 import io.narayana.lra.client.LRAClient;
 import io.narayana.lra.client.NarayanaLRAClient;
 import io.narayana.rts.lra.demo.model.Booking;
 import io.narayana.rts.lra.demo.model.BookingStore;
+import org.eclipse.microprofile.lra.annotation.Compensate;
+import org.eclipse.microprofile.lra.annotation.Complete;
+import org.eclipse.microprofile.lra.annotation.LRA;
+import org.eclipse.microprofile.lra.annotation.NestedLRA;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

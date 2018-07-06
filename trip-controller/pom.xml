@@ -77,5 +77,11 @@
             <artifactId>trip-utils</artifactId>
             <version>1.0.0.Final</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.narayana.rts</groupId>
+            <artifactId>lra-rest-definitions</artifactId>
+            <version>5.9.1.Final-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
