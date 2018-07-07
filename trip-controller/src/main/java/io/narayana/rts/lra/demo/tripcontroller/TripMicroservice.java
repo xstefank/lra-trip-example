@@ -23,6 +23,9 @@ package io.narayana.rts.lra.demo.tripcontroller;
 
 import io.narayana.lra.client.LRAClient;
 import io.narayana.lra.client.NarayanaLRAClient;
+import io.narayana.lra.rest.RESTAction;
+import io.narayana.lra.rest.RESTLra;
+import io.narayana.lra.rest.RESTLraBuilder;
 import io.narayana.rts.lra.demo.model.Booking;
 import io.narayana.rts.lra.demo.model.BookingStore;
 import org.eclipse.microprofile.lra.annotation.LRA;
@@ -74,6 +77,12 @@ public class TripMicroservice {
     @LRA(delayClose = true, join = false)
     public Booking reserve(@HeaderParam(NarayanaLRAClient.LRA_HTTP_HEADER) String bookingId) throws UnsupportedEncodingException {
 
+        RESTLra lra = RESTLraBuilder.lra()
+                .withAction(RESTAction.post(createURL("hotel-TheGrand")).build())
+                .withAction(RESTAction.post(createURL("flight-firstClass")).build())
+                .withAction(RESTAction.post(createURL("flight-economy")).build())
+                .build();
+
         Booking theGrand = initiateBooking("hotel-TheGrand");
         Booking firstClass = initiateBooking("flight-firstClass");
         Booking economy = initiateBooking("flight-economy");
@@ -83,6 +92,16 @@ public class TripMicroservice {
         Booking updatedBooking = cancel(firstClass);
         firstClass.merge(updatedBooking);
         return trip;
+    }
+
+    private URL createURL(String name) {
+        try {
+            return new URL(String.format("%s?name=%s", name.startsWith("hotel-") ? hotelURL : flightURL, name));
+        } catch (MalformedURLException e) {
+            log.error("Cannot create URL", e);
+        }
+
+        return null;
     }
 
     @PUT
